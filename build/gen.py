@@ -15,13 +15,27 @@ _inner = re.sub(r'\s*id="[^"]*"', '', _inner)
 _inner = re.sub(r'>\s+<', '><', _inner)
 # viewBox = the outline's bounding box (measured in a browser) plus 2px each side
 LOGO = f'<svg class="logo-svg" viewBox="196.8 277.3 1519.8 339.6" fill="currentColor" aria-hidden="true" focusable="false">{_inner}</svg>'                         # line 657: light/dark toggle
+# chance backgrounds (starry sky, aurora, rain): css rules, the picker script and the rain engine
+_all_css = ''.join(re.findall(r'<style[^>]*>(.*?)</style>', '\n'.join(src), flags=re.S))
+_rules, _depth, _start = [], 0, 0
+for _j, _ch in enumerate(_all_css):
+    if _ch == '{': _depth += 1
+    elif _ch == '}':
+        _depth -= 1
+        if _depth == 0: _rules.append(_all_css[_start:_j + 1].strip()); _start = _j + 1
+bg_css = ''.join(r for r in _rules if 'data-bgx' in r or 'data-rain' in r or 'rainfx' in r)
+bg_pick = next(l for l in src if l.startswith('<script>(function(){var x="",q=(location.search.match(/[?&]bg='))
+_r0 = next(n for n, l in enumerate(src) if l.startswith('<script>window.__rainOn='))
+_r1 = next(n for n in range(_r0, len(src)) if src[n].startswith('</script>'))
+rain_js = '\n'.join(src[_r0:_r1]) + '\n</script>'
+assert len(bg_css) > 5000 and 'rainjs' in rain_js
 footer_icons = re.findall(r'<a class="ib".*?</a>', '\n'.join(src[646:654]), flags=re.S)
 
 THEMES = {
- 'music':  dict(d=('#1A1418', '#231B20', '#F3ECEF', '#D3C6CC', '#A3939A', '#33282E', '#E05AAE', '#1A1418'),
-                l=('#F7F2F4', '#EEE5E9', '#221A1E', '#4B3E44', '#776970', '#E2D7DC', '#B22A7E', '#FFFFFF')),
- 'mm':     dict(d=('#141414', '#1C1C1C', '#F2F2F2', '#D4D4D4', '#9B9B9B', '#2E2E2E', '#5188CF', '#101010'),
-                l=('#F4F3EF', '#EAE8E2', '#141414', '#34332F', '#67655F', '#D6D3CB', '#3F74BD', '#FFFFFF')),
+ 'music':  dict(d=('#141412', '#1C1C19', '#F2F0EA', '#CFCCC4', '#96938B', '#2C2B28', '#E05AAE', '#141412'),
+                l=('#F6F5F1', '#ECEAE4', '#141414', '#3A3935', '#6B6862', '#DAD7CF', '#B22A7E', '#FFFFFF')),
+ 'mm':     dict(d=('#141412', '#1C1C19', '#F2F0EA', '#CFCCC4', '#96938B', '#2C2B28', '#5188CF', '#141412'),
+                l=('#F6F5F1', '#ECEAE4', '#141414', '#3A3935', '#6B6862', '#DAD7CF', '#3F74BD', '#FFFFFF')),
  'tg':     dict(d=('#141412', '#1C1C19', '#F2F0EA', '#CFCCC4', '#96938B', '#2C2B28', '#EAB421', '#141412'),
                 l=('#F6F5F1', '#ECEAE4', '#141414', '#3A3935', '#6B6862', '#DAD7CF', '#A87A00', '#FFFFFF')),
 }
@@ -133,7 +147,9 @@ page = f'''<!doctype html>
 {base_css}
 .grid{{padding-bottom:4px}}h1.logo{{line-height:0}}.logo-svg{{display:block;height:clamp(64px,8.2vw,148px);width:auto;max-width:100%}}.vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}.hero{{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:1100px){{.wrap{{min-height:100vh;display:flex;flex-direction:column}}.grid{{flex:1}}}}
+{bg_css}
 </style>
+{bg_pick}
 </head>
 <body>
 <div class="wrap">
@@ -165,6 +181,25 @@ page = f'''<!doctype html>
 </div>
 {theme_js}
 <script src="/travelers-guide/palettes.js"></script>
+<script>(function(){{var T=window.TG_THEME;if(!T)return;
+function rgb(h){{h=h.replace("#","");return [0,2,4].map(function(i){{return parseInt(h.substr(i,2),16);}});}}
+function hex(c){{return "#"+c.map(function(v){{v=Math.max(0,Math.min(255,Math.round(v)));return (v<16?"0":"")+v.toString(16);}}).join("");}}
+function lum(c){{c=c.map(function(v){{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);}});return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2];}}
+function contrast(a,b){{var x=lum(a),y=lum(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);}}
+function hueSat(c){{var r=c[0]/255,g=c[1]/255,b=c[2]/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,l=(mx+mn)/2,s=d===0?0:d/(1-Math.abs(2*l-1)),h=0;
+ if(d){{if(mx===r)h=((g-b)/d)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360;}}return [h,s];}}
+function readable(c,bg,toward){{var out=c,step=0;while(contrast(out,bg)<4.5&&step<20){{step++;out=c.map(function(v,i){{return v+(toward[i]-v)*step/20;}});}}return out;}}
+var seen={{}},pool=[T.accent[0]].concat(T.lanes).filter(function(h){{h=h.toUpperCase();if(seen[h])return false;seen[h]=1;var c=rgb(h),L=lum(c);return hueSat(c)[1]>=0.25&&L>0.02&&L<0.8;}});
+if(!pool.length)pool=[T.accent[0]];
+var picks=[pool[0]];
+while(picks.length<3&&picks.length<pool.length){{var best=null,bestGap=-1;pool.forEach(function(h){{if(picks.indexOf(h)>=0)return;var hh=hueSat(rgb(h))[0],gap=Math.min.apply(null,picks.map(function(p){{var d=Math.abs(hueSat(rgb(p))[0]-hh);return Math.min(d,360-d);}}));if(gap>bestGap){{bestGap=gap;best=h;}}}});picks.push(best);}}
+while(picks.length<3)picks.push(picks[picks.length%pool.length]);
+var DARK_BG=rgb("#141412"),LIGHT_BG=rgb("#F6F5F1"),INK_D=rgb("#141414"),INK_L=rgb("#FFFFFF"),css="";
+["music","mm","tg"].forEach(function(k,n){{var c=rgb(picks[n]),d=readable(c,DARK_BG,[255,255,255]),l=readable(c,LIGHT_BG,[0,0,0]);
+ function ink(x){{return contrast(x,INK_D)>=contrast(x,INK_L)?"#141414":"#FFFFFF";}}
+ css+=".k-"+k+"{{--acc:"+hex(d)+";--acc-ink:"+ink(d)+"}}html[data-theme=light] .k-"+k+"{{--acc:"+hex(l)+";--acc-ink:"+ink(l)+"}}";}});
+var st=document.createElement("style");st.id="cardacc";st.textContent=css;document.head.appendChild(st);}})();</script>
+{rain_js}
 <script data-goatcounter="https://mellotom.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
