@@ -164,6 +164,7 @@ page = f'''<!doctype html>
 </footer>
 </div>
 {theme_js}
+<script src="/travelers-guide/palettes.js"></script>
 <script data-goatcounter="https://mellotom.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
