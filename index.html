@@ -167,7 +167,7 @@ html[data-bgx]:not([data-theme="light"]) body{background:transparent}html[data-b
 </footer>
 </div>
 <script>(function(){var r=document.documentElement,K="hn-mode";var btns=document.querySelectorAll("button.tm[data-t]");function set(t,save){if(t==="light"){r.setAttribute("data-theme","light");}else{r.removeAttribute("data-theme");t="dark";}btns.forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-t")===t));});if(save){try{localStorage.setItem(K,t);}catch(e){}}}function load(){var v=null;try{v=localStorage.getItem(K);}catch(e){}if(v!=="light"&&v!=="dark"){var hh=new Date().getHours();v=(hh>=7&&hh<19)?"light":"dark";}set(v==="light"?"light":"dark",false);}load();window.addEventListener("pageshow",load);btns.forEach(function(b){b.addEventListener("click",function(){set(b.getAttribute("data-t"),true);});});})();</script>
-<script src="/travelers-guide/palettes.js"></script>
+<script src="/travelers-guide/palettes.js?v=20261121b"></script>
 <script>(function(){var T=window.TG_THEME;if(!T)return;
 function rgb(h){h=h.replace("#","");return [0,2,4].map(function(i){return parseInt(h.substr(i,2),16);});}
 function hex(c){return "#"+c.map(function(v){v=Math.max(0,Math.min(255,Math.round(v)));return (v<16?"0":"")+v.toString(16);}).join("");}

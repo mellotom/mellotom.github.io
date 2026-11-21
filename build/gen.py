@@ -180,7 +180,7 @@ page = f'''<!doctype html>
 </footer>
 </div>
 {theme_js}
-<script src="/travelers-guide/palettes.js"></script>
+<script src="/travelers-guide/palettes.js?v=20261121b"></script>
 <script>(function(){{var T=window.TG_THEME;if(!T)return;
 function rgb(h){{h=h.replace("#","");return [0,2,4].map(function(i){{return parseInt(h.substr(i,2),16);}});}}
 function hex(c){{return "#"+c.map(function(v){{v=Math.max(0,Math.min(255,Math.round(v)));return (v<16?"0":"")+v.toString(16);}}).join("");}}
