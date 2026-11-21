@@ -6,7 +6,15 @@ line10 = src[9]
 root_vars = re.match(r'<style>(:root\{[^}]*\}html\[data-theme="light"\]\{[^}]*\})', line10).group(1)
 tm_css = line10[line10.index('.tm{'):]
 base_css = '\n'.join(src[10:101])          # lines 11-101: layout, card, footer, mobile
-theme_js = src[656]                         # line 657: light/dark toggle
+theme_js = src[656]
+import os
+_logo = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logo.svg'), encoding='utf-8').read()
+_inner = _logo[_logo.index('<g>'):_logo.rindex('</g>') + 4]
+_inner = re.sub(r'\s*affinity:id="[^"]*"', '', _inner)
+_inner = re.sub(r'\s*id="[^"]*"', '', _inner)
+_inner = re.sub(r'>\s+<', '><', _inner)
+# viewBox = the outline's bounding box (measured in a browser) plus 2px each side
+LOGO = f'<svg class="logo-svg" viewBox="196.8 277.3 1519.8 339.6" fill="currentColor" aria-hidden="true" focusable="false">{_inner}</svg>'                         # line 657: light/dark toggle
 footer_icons = re.findall(r'<a class="ib".*?</a>', '\n'.join(src[646:654]), flags=re.S)
 
 THEMES = {
@@ -123,7 +131,7 @@ page = f'''<!doctype html>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&amp;family=Roboto+Mono:wght@400;500;600;700&amp;display=swap">
 <style>{root_vars}{theme_css}{tm_css}
 {base_css}
-.grid{{padding-bottom:4px}}.hero{{grid-template-columns:minmax(0,1fr)}}
+.grid{{padding-bottom:4px}}h1.logo{{line-height:0}}.logo-svg{{display:block;height:clamp(64px,8.2vw,148px);width:auto;max-width:100%}}.vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}.hero{{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:1100px){{.wrap{{min-height:100vh;display:flex;flex-direction:column}}.grid{{flex:1}}}}
 </style>
 </head>
@@ -137,7 +145,7 @@ page = f'''<!doctype html>
 </div>
 <header class="hero">
 <div>
-<div class="titlerow"><h1>mellotom</h1>
+<div class="titlerow"><h1 class="logo"><span class="vh">mellotom</span>{LOGO}</h1>
 <div class="sub2"><span>_home</span><span class="acc">_choose a destination</span></div></div>
 <div class="bar"></div>
 </div>
