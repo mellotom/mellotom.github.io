@@ -175,7 +175,7 @@ page = f'''<!doctype html>
 <div>design homage to the <a href="https://www.marvel.com/comics/guides/1556/house-of-xpowers-of-x" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px">house of x / powers of x</a> data pages — designed by tom muller with jonathan hickman<br>not affiliated with ableton, cycling '74, make noise or marvel</div>
 <div class="right">
 {''.join(footer_icons)}
-<span style="display: flex; flex-direction: column; align-items: flex-end"><span>conceived by <a class="l" href="https://linktr.ee/mellotom" target="_blank" rel="noopener">mellotom</a> · mellotom.music ... 00.00_01</span><span style="opacity: .62">created with claude</span></span>
+<span style="display: flex; flex-direction: column; align-items: flex-end"><span>conceived by <a class="l" href="https://linktr.ee/mellotom" target="_blank" rel="noopener">mellotom</a> · mellotom.music ... 00.00_01</span><span style="opacity: .62"><a href=https://mellotom.music/ai-usage-disclaimer/ style=color:inherit;text-underline-offset:2px>AI Usage Disclaimer</a></span></span>
 </div>
 </footer>
 </div>
@@ -205,4 +205,44 @@ var st=document.createElement("style");st.id="cardacc";st.textContent=css;docume
 </html>
 '''
 open(sys.argv[2], 'w', encoding='utf-8').write(page)
+
+# ---- ai usage disclaimer page: same shell as the home page, text from build/disclaimer.txt ----
+import html as _html
+_here = os.path.dirname(os.path.abspath(__file__))
+_raw = open(os.path.join(_here, 'disclaimer.txt'), encoding='utf-8').read().strip().split('\n')
+_meta = [l for l in _raw if l.startswith('[ ')]
+_paras = [l[2:].strip() for l in _raw if l.startswith('>>')]
+def _meta_row(l):
+    k, v = l.split(' : ', 1)
+    return f'<div class="em"><span class="ek">{_html.escape(k)}</span><span class="es">:</span><span class="ev">{_html.escape(v)}</span></div>'
+ENTRY = ('<main class="entry"><article class="ebox">' + ''.join(_meta_row(l) for l in _meta)
+         + '<div class="ebody">' + ''.join(f'<p><span class="gt" aria-hidden="true">&gt;&gt;</span><span>{_html.escape(t)}</span></p>' for t in _paras)
+         + '</div></article></main>')
+ENTRY_CSS = ('.entry{display:block;padding:28px 0 8px}'
+ '.ebox{max-width:980px;margin:0 auto;border:2px solid var(--pa);padding:22px 30px 26px}'
+ '.em{display:flex;gap:12px;font-family:"Roboto Mono",monospace;font-size:15px;line-height:1.7;color:var(--pi)}'
+ '.ek{color:var(--pm);min-width:150px}.es{color:var(--pm)}.ev{font-weight:700;color:var(--pa)}'
+ '.ebody{border-top:4px solid var(--pi);margin-top:14px;padding-top:6px}'
+ '.ebody p{display:grid;grid-template-columns:34px minmax(0,1fr);gap:0 6px;margin:14px 0 0;font-size:19px;line-height:1.55;color:var(--pi)}'
+ '.gt{font-family:"Roboto Mono",monospace;font-weight:700;color:var(--pa);font-size:15px;line-height:1.95}'
+ '@media (max-width:899px){.ebox{padding:16px 16px 20px}.em{flex-wrap:wrap;gap:0 8px;font-size:13px}.ek{min-width:0}.ebody p{grid-template-columns:26px minmax(0,1fr);font-size:16.5px}.gt{font-size:13px;line-height:1.9}}'
+ '@media (min-width:1100px){.entry{flex:1}}')
+BACK = ('<span><a class="tm" href="/" style="display: inline-flex; align-items: center; gap: 5px"><svg width="14" height="9" viewBox="0 0 14 9" aria-hidden="true" style="display: block; flex: none">'
+        '<path d="M13.2 4.5 H1.6 M5.1 1 L1.6 4.5 L5.1 8" fill="none" stroke="currentColor" stroke-width="1.3"></path></svg><span>back to mellotom.music</span></a></span>')
+d = page
+def _swap(a, b):
+    global d
+    assert d.count(a) == 1, a[:60]
+    d = d.replace(a, b)
+_swap('<title>mellotom</title>', '<title>ai usage disclaimer · mellotom</title>')
+_swap('content="mellotom: music, the morpmarker max for live device, and the travelers guide eurorack guides."', 'content="how mellotom uses ai on mellotom.music, and what it is never used for."')
+_swap('<span>home ...................... 3 destinations</span>', '<span>entry .............. ai usage disclaimer</span>')
+_swap('<div class="tm-line"><span>mode', '<div class="tm-line">' + BACK + '<span>mode')
+_swap('<span>_home</span><span class="acc">_choose a destination</span>', '<span>_entry</span><span class="acc">_ai usage disclaimer</span>')
+_swap('<span>music · morpmarker · travelers guide</span><span>pick a window or press navigate</span><span>mellotom.music</span>', '<span>ai usage disclaimer</span><span>linked from every page footer</span><span>mellotom.music</span>')
+d = re.sub(r'<main class="grid">.*?</main>', lambda m: ENTRY, d, count=1, flags=re.S)
+_swap('</style>\n' + bg_pick, ENTRY_CSS + '\n</style>\n' + bg_pick)
+os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), 'ai-usage-disclaimer'), exist_ok=True)
+open(os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), 'ai-usage-disclaimer', 'index.html'), 'w', encoding='utf-8').write(d)
+print('ok disclaimer', len(d))
 print('ok', len(page))
