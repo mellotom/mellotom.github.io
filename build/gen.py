@@ -157,7 +157,7 @@ page = f'''<!doctype html>
 <div class="slugs">
 <div><span style="font-weight: 600">mellotom.music ................ 00.00_00</span><span>home ...................... 3 destinations</span></div>
 <div class="tm-line"><span>mode ...................... <button type="button" class="tm" data-t="light" aria-pressed="false">light</button>/<button type="button" class="tm" data-t="dark" aria-pressed="false">dark</button></span></div>
-<div class="r"><span>conceived by ............. <a href="https://linktr.ee/mellotom" target="_blank" rel="noopener" style="text-underline-offset: 2px">mellotom</a></span><span>rev ......................... 2026.11</span></div>
+<div class="r"><span>conceived by ............. <a href="https://linktr.ee/mellotom" target="_blank" rel="noopener" style="text-underline-offset: 2px">mellotom</a></span><span>rev ......................... 2026.11</span><span class="gc" data-path="TOTAL" data-l="37" style="visibility: hidden">visitors</span></div>
 </div>
 <header class="hero">
 <div>
@@ -201,6 +201,7 @@ var DARK_BG=rgb("#141412"),LIGHT_BG=rgb("#F6F5F1"),INK_D=rgb("#141414"),INK_L=rg
 var st=document.createElement("style");st.id="cardacc";st.textContent=css;document.head.appendChild(st);}})();</script>
 {rain_js}
 <script data-goatcounter="https://mellotom.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script>(function(){{var e=document.querySelector('.gc');if(!e||!window.fetch)return;var p=e.getAttribute('data-path')||location.pathname,L=+e.getAttribute('data-l')||40;fetch('https://mellotom.goatcounter.com/counter/'+encodeURIComponent(p)+'.json').then(function(r){{return r.ok?r.json():null}}).then(function(j){{if(!j||j.count==null)return;var n=String(j.count).trim();e.textContent='visitors '+new Array(Math.max(3,L-9-n.length)).join('.')+' '+n;e.style.visibility='visible';}}).catch(function(){{}});}})();</script>
 </body>
 </html>
 '''
@@ -240,6 +241,7 @@ def _swap(a, b):
     global d
     assert d.count(a) == 1, a[:60]
     d = d.replace(a, b)
+_swap('<span class="gc" data-path="TOTAL" data-l="37"', '<span class="gc" data-l="37"')
 _swap('<title>mellotom</title>', '<title>ai usage disclaimer · mellotom</title>')
 _swap('content="mellotom: music, the morpmarker max for live device, and the travelers guide eurorack guides."', 'content="how mellotom uses ai on mellotom.music, and what it is never used for."')
 _swap('<span>home ...................... 3 destinations</span>', '<span>entry .............. ai usage disclaimer</span>')

@@ -111,7 +111,7 @@ html[data-bgx]:not([data-theme="light"]) body{background:transparent}html[data-b
 <div class="slugs">
 <div><span style="font-weight: 600">mellotom.music ................ 00.00_00</span><span>home ...................... 3 destinations</span></div>
 <div class="tm-line"><span>mode ...................... <button type="button" class="tm" data-t="light" aria-pressed="false">light</button>/<button type="button" class="tm" data-t="dark" aria-pressed="false">dark</button></span></div>
-<div class="r"><span>conceived by ............. <a href="https://linktr.ee/mellotom" target="_blank" rel="noopener" style="text-underline-offset: 2px">mellotom</a></span><span>rev ......................... 2026.11</span></div>
+<div class="r"><span>conceived by ............. <a href="https://linktr.ee/mellotom" target="_blank" rel="noopener" style="text-underline-offset: 2px">mellotom</a></span><span>rev ......................... 2026.11</span><span class="gc" data-path="TOTAL" data-l="37" style="visibility: hidden">visitors</span></div>
 </div>
 <header class="hero">
 <div>
@@ -229,5 +229,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 <script data-goatcounter="https://mellotom.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script>(function(){var e=document.querySelector('.gc');if(!e||!window.fetch)return;var p=e.getAttribute('data-path')||location.pathname,L=+e.getAttribute('data-l')||40;fetch('https://mellotom.goatcounter.com/counter/'+encodeURIComponent(p)+'.json').then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||j.count==null)return;var n=String(j.count).trim();e.textContent='visitors '+new Array(Math.max(3,L-9-n.length)).join('.')+' '+n;e.style.visibility='visible';}).catch(function(){});})();</script>
 </body>
 </html>
