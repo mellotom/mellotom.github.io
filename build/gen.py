@@ -212,11 +212,17 @@ _here = os.path.dirname(os.path.abspath(__file__))
 _raw = open(os.path.join(_here, 'disclaimer.txt'), encoding='utf-8').read().strip().split('\n')
 _meta = [l for l in _raw if l.startswith('[ ')]
 _paras = [l[2:].strip() for l in _raw if l.startswith('>>')]
+def _fmt(t):
+    # __bold underlined__, **bold**, *italic*
+    t = _html.escape(t)
+    t = re.sub(r'__(.+?)__', r'<b><u>\1</u></b>', t)
+    t = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', t)
+    return re.sub(r'\*(.+?)\*', r'<i>\1</i>', t)
 def _meta_row(l):
     k, v = l.split(' : ', 1)
     return f'<div class="em"><span class="ek">{_html.escape(k)}</span><span class="es">:</span><span class="ev">{_html.escape(v)}</span></div>'
 ENTRY = ('<main class="entry"><article class="ebox">' + ''.join(_meta_row(l) for l in _meta)
-         + '<div class="ebody">' + ''.join(f'<p><span class="gt" aria-hidden="true">&gt;&gt;</span><span>{_html.escape(t)}</span></p>' for t in _paras)
+         + '<div class="ebody">' + ''.join(f'<p><span class="gt" aria-hidden="true">&gt;&gt;</span><span>{_fmt(t)}</span></p>' for t in _paras)
          + '</div></article></main>')
 ENTRY_CSS = ('.entry{display:block;padding:28px 0 8px}'
  '.ebox{max-width:980px;margin:0 auto;border:2px solid var(--pa);padding:22px 30px 26px}'
@@ -224,7 +230,7 @@ ENTRY_CSS = ('.entry{display:block;padding:28px 0 8px}'
  '.ek{color:var(--pm);min-width:150px}.es{color:var(--pm)}.ev{font-weight:700;color:var(--pa)}'
  '.ebody{border-top:4px solid var(--pi);margin-top:14px;padding-top:6px}'
  '.ebody p{display:grid;grid-template-columns:34px minmax(0,1fr);gap:0 6px;margin:14px 0 0;font-size:19px;line-height:1.55;color:var(--pi)}'
- '.gt{font-family:"Roboto Mono",monospace;font-weight:700;color:var(--pa);font-size:15px;line-height:1.95}'
+ '.ebody b{font-weight:800}.ebody u{text-decoration-thickness:2px;text-underline-offset:4px}.gt{font-family:"Roboto Mono",monospace;font-weight:700;color:var(--pa);font-size:15px;line-height:1.95}'
  '@media (max-width:899px){.ebox{padding:16px 16px 20px}.em{flex-wrap:wrap;gap:0 8px;font-size:13px}.ek{min-width:0}.ebody p{grid-template-columns:26px minmax(0,1fr);font-size:16.5px}.gt{font-size:13px;line-height:1.9}}'
  '@media (min-width:1100px){.entry{flex:1}}')
 BACK = ('<span><a class="tm" href="/" style="display: inline-flex; align-items: center; gap: 5px"><svg width="14" height="9" viewBox="0 0 14 9" aria-hidden="true" style="display: block; flex: none">'
