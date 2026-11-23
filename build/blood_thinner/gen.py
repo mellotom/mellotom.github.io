@@ -17,7 +17,7 @@ head = tpl[:tpl.find('<div id="frame">')]
 head = re.sub(r'<title>.*?</title>', f'<title>{TITLE}</title>', head, count=1)
 head = re.sub(r'<meta name="description" content="[^"]*">',
               '<meta name="description" content="[ blood_thinner ]: a free ableton eq eight preset that clears low-end build-up on any track, with six macros for quick tone shaping and five eq bands left free.">', head, count=1)
-head = head.replace('</style>', '.mmfig{display:block;width:100%;height:auto}.mmbtn{display:inline-flex;align-items:center;gap:8px;font-family:\'Roboto Mono\',monospace;font-weight:600;font-size:12px;padding:8px 12px;border:1.5px solid var(--cF2F2F0);color:var(--cF2F2F0);text-decoration:none}.mmbtn.go{background:var(--cE5484D);border-color:var(--cE5484D);color:var(--c111112)}.mmbtn:hover{border-color:var(--cF28A2A);color:var(--cF28A2A)}.mmbtn.go:hover{background:var(--cF28A2A);border-color:var(--cF28A2A);color:var(--c111112)}.mmacts{display:flex;flex-wrap:wrap;gap:8px}.btp{font-family:\'Archivo\',sans-serif;font-size:13.5px;line-height:1.5;color:var(--cD0D0CC);margin:6px 0 0}.btp b{color:var(--cF2F2F0)}@media screen and (max-width: 899px){.btdev .mmfig{width:100%}.btdev div[style*="width: 832px"]{width:auto!important;flex:1 1 auto!important}.btdev div[style*="display: flex; gap: 28px"]{flex-direction:column}}html.tall .btdev div[style*="width: 832px"]{width:auto!important;flex:1 1 auto!important}html.tall .btdev div[style*="display: flex; gap: 28px"]{flex-direction:column}@media screen and (max-width: 899px){.btdev{grid-column:auto!important;grid-row:auto!important}}html.tall .btdev{grid-column:1 / -1!important;grid-row:auto!important}@media screen and (max-width: 899px){h1.m-h1.long{font-size:min(44px,9.4vw)!important}}\n</style>', 1)
+head = head.replace('</style>', '.mmfig{display:block;width:100%;height:auto}.mmbtn{display:inline-flex;align-items:center;gap:8px;font-family:\'Roboto Mono\',monospace;font-weight:600;font-size:12px;padding:8px 12px;border:1.5px solid var(--cF2F2F0);color:var(--cF2F2F0);text-decoration:none}.mmbtn.go{background:var(--cE5484D);border-color:var(--cE5484D);color:var(--c111112)}.mmbtn:hover{border-color:var(--cF28A2A);color:var(--cF28A2A)}.mmbtn.go:hover{background:var(--cF28A2A);border-color:var(--cF28A2A);color:var(--c111112)}.mmacts{display:flex;flex-wrap:wrap;gap:8px}.btp{font-family:\'Archivo\',sans-serif;font-size:13.5px;line-height:1.5;color:var(--cD0D0CC);margin:6px 0 0}.btp b{color:var(--cF2F2F0)}#sheet .m-grid>.col{gap:30px}@media screen and (max-width: 899px){.btdev .mmfig{width:100%}.btdev div[style*="width: 832px"]{width:auto!important;flex:1 1 auto!important}.btdev div[style*="display: flex; gap: 28px"]{flex-direction:column}}html.tall .btdev div[style*="width: 832px"]{width:auto!important;flex:1 1 auto!important}html.tall .btdev div[style*="display: flex; gap: 28px"]{flex-direction:column}@media screen and (max-width: 899px){.btdev{grid-column:auto!important;grid-row:auto!important}}html.tall .btdev{grid-column:1 / -1!important;grid-row:auto!important}@media screen and (max-width: 899px){h1.m-h1.long{font-size:min(44px,9.4vw)!important}}\n</style>', 1)
 tail = tpl[tpl.find('</footer>') + len('</footer>'):]
 
 def sec(n, col, title, sc, body):
@@ -159,7 +159,7 @@ c3 = ''.join([
    r(v('not the high pass'), 'the high pass has no gain, so intensity never changes it'),
    r(v('use it'), 'one knob to take the whole curve harder or softer once it’s set'),
  ])),
- sec(7, B, 'wide moves on purpose', 'bt_07 · why shelves', ''.join([
+ sec(7, B, 'wide moves on purpose', 'bt_07', ''.join([
    r(v('broad strokes'), 'shelves and a high pass move whole regions, not narrow slices'),
    r(v('transparent'), 'gentle, wide curves change the balance of a sound without giving it a new character'),
    r(v('fast'), 'set it in seconds on every track, then move on'),
@@ -174,7 +174,7 @@ c4 = ''.join([
    r(v('headroom'), 'most of a mix’s headroom goes to the low end'),
    r(v('your bus'), 'mix compressors and limiters react to it long before a high frequency ever reaches the gain reduction meter'),
  ])),
- figsec('__fig.04 : how big a wave is', 'speed of sound ≈ 343 m/s', waves()),
+ figsec('__fig.04 : how big a wave is', 'at ≈ 343 m/s', waves()),
  sec(9, Y, 'the send problem', 'bt_09 · reverb + delay', ''.join([
    r(v('stacked'), 'send several channels to one reverb or delay and their low end adds together'),
    r(v('smeared'), 'then it’s spread across time and the stereo field'),
