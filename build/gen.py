@@ -103,30 +103,48 @@ def eqmini(W=400, H=120, y0=0):
 def eqfig():
     return f'<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="the blood_thinner curve: a high pass and a gentle low shelf">{eqmini(400, 236, 12)}</svg>'
 def skinfig():
-    # a synth panel reskinned: light header bars, silver knobs with dark pointers, a navy screen with a saw wave, no text
+    # the massiv skin itself: slate panel, light header bars, navy screens, silver knobs with black pointers,
+    # and massive-style blue / green / yellow tabs (env / lfo / macro). colours are fixed hex, set as inline
+    # styles, so the site's theme toggle and palette accents never recolour it.
     import math
-    s = ['<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="a synth panel with silver knobs, light header bars and a dark screen">']
-    s.append('<rect x="14" y="20" width="372" height="220" rx="6" fill="var(--pn)" stroke="var(--ink)" stroke-width="2"/>')
-    for x0, w in ((14, 182), (204, 182)):
-        s.append(f'<rect x="{x0 + 8}" y="30" width="{w - 16}" height="16" rx="2" fill="var(--ink2)" opacity=".85"/>')
-        s.append(f'<rect x="{x0 + 16}" y="35" width="44" height="6" rx="3" fill="var(--pn)"/>')
-        s.append(f'<rect x="{x0 + 8}" y="52" width="{w - 16}" height="76" rx="2" fill="var(--bg)" stroke="var(--hair)"/>')
-    # saw on the left screen, triangle on the right
-    s.append('<polyline points="32,118 104,62 104,118 176,62" fill="none" stroke="var(--acc)" stroke-width="3" stroke-linejoin="round"/>')
-    s.append('<polyline points="222,118 258,62 294,118 330,62 368,118" fill="none" stroke="var(--acc)" stroke-width="3" stroke-linejoin="round" opacity=".7"/>')
+    C = dict(frame='#0e1526', body='#2a3147', bar='#c4cfdb', bartext='#2a3147', screen='#090e1b', grid='#1b2234',
+             lower='#b8c4d3', ring='#1e253a', ptr='#0a0d12', env='#0098ef', lfo='#2fc12f', mac='#e3c21c')
+    f = lambda c: f'style="fill:{c}"'
+    st = lambda c, w: f'style="fill:none;stroke:{c};stroke-width:{w};stroke-linecap:round;stroke-linejoin:round"'
+    s = ['<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="the massiv skin: a slate synth panel with silver knobs, navy screens and blue, green and yellow tabs">',
+         '<defs><radialGradient id="mv-silver" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#f2f5f8"/>'
+         '<stop offset=".6" stop-color="#b7c0ca"/><stop offset="1" stop-color="#6f7986"/></radialGradient></defs>']
+    s.append(f'<rect x="8" y="10" width="384" height="240" rx="6" {f(C["frame"])}/>')
+    s.append(f'<rect x="14" y="16" width="372" height="228" rx="4" {f(C["body"])}/>')
+    for x0 in (20, 206):
+        w = 174
+        s.append(f'<rect x="{x0}" y="22" width="{w}" height="16" rx="2" {f(C["bar"])}/>')
+        s.append(f'<rect x="{x0 + 8}" y="27" width="40" height="6" rx="3" {f(C["bartext"])}/>')
+        s.append(f'<rect x="{x0}" y="42" width="{w}" height="70" rx="2" {f(C["screen"])}/>')
+        for gx in (x0 + 58, x0 + 116):
+            s.append(f'<line x1="{gx}" y1="44" x2="{gx}" y2="110" {st(C["grid"], 1)}/>')
+        s.append(f'<rect x="{x0}" y="116" width="{w}" height="86" rx="2" {f(C["lower"])}/>')
+    s.append(f'<polyline points="28,104 104,52 104,104 180,52" {st(C["env"], 3)}/>')
+    s.append(f'<polyline points="214,104 250,52 286,104 322,52 372,104" {st(C["lfo"], 3)}/>')
     def knob(cx, cy, r, ang):
         a = math.radians(ang)
-        out = [f'<circle cx="{cx}" cy="{cy}" r="{r + 4}" fill="none" stroke="var(--hair)" stroke-width="3"/>',
-               f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="var(--ink2)"/>',
-               f'<circle cx="{cx - r * .3:.1f}" cy="{cy - r * .35:.1f}" r="{r * .45:.1f}" fill="var(--ink)" opacity=".45"/>',
-               f'<line x1="{cx + r * .25 * math.cos(a):.1f}" y1="{cy + r * .25 * math.sin(a):.1f}" x2="{cx + r * .85 * math.cos(a):.1f}" y2="{cy + r * .85 * math.sin(a):.1f}" stroke="var(--pn)" stroke-width="3" stroke-linecap="round"/>']
-        return ''.join(out)
+        return (f'<circle cx="{cx}" cy="{cy}" r="{r + 3}" {f(C["ring"])}/>'
+                f'<circle cx="{cx}" cy="{cy}" r="{r}" style="fill:url(#mv-silver)"/>'
+                f'<line x1="{cx + r * .2 * math.cos(a):.1f}" y1="{cy + r * .2 * math.sin(a):.1f}" '
+                f'x2="{cx + r * .85 * math.cos(a):.1f}" y2="{cy + r * .85 * math.sin(a):.1f}" {st(C["ptr"], 3)}/>')
     angles = [200, 250, 300, 340, 225, 280, 320, 20]
-    for i, cx in enumerate((48, 102, 156, 244, 298, 352)):
-        s.append(knob(cx, 160, 15, angles[i]))
-    for i, cx in enumerate((48, 102, 156, 244, 298, 352)):
-        s.append(knob(cx, 210, 11, angles[(i + 3) % 8]))
-    s.append('<line x1="200" y1="146" x2="200" y2="226" stroke="var(--hair)" stroke-width="2"/>')
+    cols = (50, 107, 164, 236, 293, 350)
+    for i, cx in enumerate(cols):
+        s.append(knob(cx, 140, 13, angles[i]))
+    for i, cx in enumerate(cols):
+        s.append(knob(cx, 182, 10, angles[(i + 3) % 8]))
+    # the mod tabs strip: two envelope tabs, two lfo tabs, one macro tab
+    tabs = [C['env'], C['env'], C['lfo'], C['lfo'], C['mac']]
+    tw = (372 - 12 - 4 * 6) / 5
+    for i, c in enumerate(tabs):
+        x = 20 + i * (tw + 6)
+        s.append(f'<rect x="{x:.1f}" y="210" width="{tw:.1f}" height="26" rx="2" style="fill:{c};fill-opacity:{1 if i in (0, 2, 4) else .55}"/>')
+        s.append(f'<rect x="{x + 8:.1f}" y="220" width="{tw * .45:.1f}" height="6" rx="3" style="fill:#0a0d12;fill-opacity:.55"/>')
     s.append('</svg>')
     return ''.join(s)
 def toolsfig():
