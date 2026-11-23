@@ -330,7 +330,7 @@ _tswap('<title>mellotom</title>', '<title>free tools · mellotom</title>')
 _tswap('content="mellotom: music, the morpmarker max for live device, and the travelers guide eurorack guides."', 'content="free max for live devices, ableton presets and serum skins by mellotom. download free on gumroad, or name your price."')
 _tswap('<span>home ...................... 3 destinations</span>', f'<span>tools ................ {len(TOOLS)} free downloads</span>')
 _tswap('<span class="gc" data-path="TOTAL" data-l="37"', '<span class="gc" data-l="37"')
-_tswap('<span>_home</span><span class="acc">_choose a destination</span>', '<span>_free tools</span><span class="acc">_pay what you want</span>')
+_tswap('<span>_home</span><span class="acc">_choose a destination</span>', '<span>_free downloads</span><span class="acc">_devices + tools</span>')
 _tswap('<span>music · free tools · travelers guide</span><span>pick a window or press navigate</span><span>mellotom.music</span>', '<span>every download is free on gumroad · name your price if you like</span><span>downloads stay in your gumroad library</span><span>mellotom.music</span>')
 tp = re.sub(r'<main class="grid">.*?</main>', lambda m: '<main class="grid">' + ''.join(card(c) for c in TOOLS) + '</main>', tp, count=1, flags=re.S)
 _back = ('<span><a class="tm" href="/" style="display: inline-flex; align-items: center; gap: 5px"><svg width="14" height="9" viewBox="0 0 14 9" aria-hidden="true" style="display: block; flex: none">'
