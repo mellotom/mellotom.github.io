@@ -102,6 +102,33 @@ def eqmini(W=400, H=120, y0=0):
     return ''.join(s)
 def eqfig():
     return f'<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="the blood_thinner curve: a high pass and a gentle low shelf">{eqmini(400, 236, 12)}</svg>'
+def skinfig():
+    # a synth panel reskinned: light header bars, silver knobs with dark pointers, a navy screen with a saw wave, no text
+    import math
+    s = ['<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="a synth panel with silver knobs, light header bars and a dark screen">']
+    s.append('<rect x="14" y="20" width="372" height="220" rx="6" fill="var(--pn)" stroke="var(--ink)" stroke-width="2"/>')
+    for x0, w in ((14, 182), (204, 182)):
+        s.append(f'<rect x="{x0 + 8}" y="30" width="{w - 16}" height="16" rx="2" fill="var(--ink2)" opacity=".85"/>')
+        s.append(f'<rect x="{x0 + 16}" y="35" width="44" height="6" rx="3" fill="var(--pn)"/>')
+        s.append(f'<rect x="{x0 + 8}" y="52" width="{w - 16}" height="76" rx="2" fill="var(--bg)" stroke="var(--hair)"/>')
+    # saw on the left screen, triangle on the right
+    s.append('<polyline points="32,118 104,62 104,118 176,62" fill="none" stroke="var(--acc)" stroke-width="3" stroke-linejoin="round"/>')
+    s.append('<polyline points="222,118 258,62 294,118 330,62 368,118" fill="none" stroke="var(--acc)" stroke-width="3" stroke-linejoin="round" opacity=".7"/>')
+    def knob(cx, cy, r, ang):
+        a = math.radians(ang)
+        out = [f'<circle cx="{cx}" cy="{cy}" r="{r + 4}" fill="none" stroke="var(--hair)" stroke-width="3"/>',
+               f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="var(--ink2)"/>',
+               f'<circle cx="{cx - r * .3:.1f}" cy="{cy - r * .35:.1f}" r="{r * .45:.1f}" fill="var(--ink)" opacity=".45"/>',
+               f'<line x1="{cx + r * .25 * math.cos(a):.1f}" y1="{cy + r * .25 * math.sin(a):.1f}" x2="{cx + r * .85 * math.cos(a):.1f}" y2="{cy + r * .85 * math.sin(a):.1f}" stroke="var(--pn)" stroke-width="3" stroke-linecap="round"/>']
+        return ''.join(out)
+    angles = [200, 250, 300, 340, 225, 280, 320, 20]
+    for i, cx in enumerate((48, 102, 156, 244, 298, 352)):
+        s.append(knob(cx, 160, 15, angles[i]))
+    for i, cx in enumerate((48, 102, 156, 244, 298, 352)):
+        s.append(knob(cx, 210, 11, angles[(i + 3) % 8]))
+    s.append('<line x1="200" y1="146" x2="200" y2="226" stroke="var(--hair)" stroke-width="2"/>')
+    s.append('</svg>')
+    return ''.join(s)
 def toolsfig():
     # a generic ableton-style device: title bar, knobs, buttons and toggles, no text
     import math
@@ -162,9 +189,9 @@ CARDS = [
  dict(k='music', slug='linktr.ee/mellotom', n='01', maker='mellotom', kind='links', h='music', what='every link in one place',
       t1='_mellotom', t2='_for listening', href='https://linktr.ee/mellotom', ext=True, fig=record(), ratio='1 / 1', mw='300px',
       br='[ music ]', sub=['opens linktr.ee']),
- dict(k='mm', slug='tools', n='02', maker='free', kind='pay what you want', h='free tools + downloads', what='max for live devices + ableton presets',
+ dict(k='mm', slug='tools', n='02', maker='free', kind='pay what you want', h='free tools + downloads', what='m4l devices, ableton presets + serum skins',
       t1='_devices + presets', t2='_each with its own guide', href='/tools/', ext=False, fig=toolsfig(), ratio='400 / 260', mw='400px',
-      br='[ free tools ]', sub=['morpmarker', '·', 'blood_thinner']),
+      br='[ free tools ]', sub=['morpmarker', '·', 'blood_thinner', '·', 'massiv']),
  dict(k='tg', slug='travelers-guide', n='03', maker='eurorack', kind='one-page guides', h='travelers guide', what='the welcome center',
       t1='_welcome center', t2='_choose a destination', href='/travelers-guide/', ext=False, fig=sheet(), ratio='400 / 260', mw='400px',
       br='[ the guides ]', sub=['light / dark inside', '·', 'phone friendly', '·', 'print ready']),
@@ -182,7 +209,7 @@ def card(c):
 <div class="head"><span class="num">{c['n']}</span><div class="hb"><h2>{c['h']}</h2><span class="what">{c['what']}</span></div></div>
 <div class="tag"><span>{c['t1']}</span><span class="acc">{c['t2']}</span></div>
 <a class="fig" href="{c['href']}"{tgt} aria-label="open {c['h']}" tabindex="-1"><div class="figbox" style="aspect-ratio: {c['ratio']}; max-width: {c['mw']}">{c['fig']}</div></a>
-<a class="go" href="{c['href']}"{tgt}><span>navigate</span> <span class="br">{c['br']}</span>{ARROW}</a>{('<a class="go dl" href="' + c['dl'] + '" target="_blank" rel="noopener"><span>free download</span> <span class="br">[ gumroad ]</span>' + ARROW + '</a>') if c.get('dl') else ''}
+<a class="go" href="{c['href']}"{tgt}><span>{c.get('go', 'navigate')}</span> <span class="br">{c['br']}</span>{ARROW}</a>{('<a class="go dl" href="' + c['dl'] + '" target="_blank" rel="noopener"><span>free download</span> <span class="br">[ gumroad ]</span>' + ARROW + '</a>') if c.get('dl') else ''}
 <div class="sub">{''.join(f'<span>{x}</span>' for x in c['sub'])}</div>
 </div>
 </article>'''
@@ -229,7 +256,7 @@ page = f'''<!doctype html>
 {''.join(card(c) for c in CARDS)}
 </main>
 <footer class="foot">
-<div>design homage to the <a href="https://www.marvel.com/comics/guides/1556/house-of-xpowers-of-x" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px">house of x / powers of x</a> data pages — designed by tom muller with jonathan hickman<br>not affiliated with ableton, cycling '74, make noise or marvel</div>
+<div>design homage to the <a href="https://www.marvel.com/comics/guides/1556/house-of-xpowers-of-x" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px">house of x / powers of x</a> data pages — designed by tom muller with jonathan hickman<br>not affiliated with ableton, cycling '74, make noise, xfer records or marvel</div>
 <div class="right">
 {''.join(footer_icons)}
 <span style="display: flex; flex-direction: column; align-items: flex-end"><span>conceived by <a class="l" href="https://linktr.ee/mellotom" target="_blank" rel="noopener">mellotom</a> · mellotom.music ... 00.00_01</span><span style="opacity: .62"><a href=https://mellotom.music/ai-usage-disclaimer/ style=color:inherit;text-underline-offset:2px>AI Usage Disclaimer</a></span></span>
@@ -266,12 +293,15 @@ open(sys.argv[2], 'w', encoding='utf-8').write(page)
 
 # ---- free tools page (mellotom.music/tools/): one window per free download, each with its product page and a gumroad button
 TOOLS = [
- dict(k='music', slug='blood_thinner', n='01', tot='02', maker='ableton eq eight', kind='preset', h='[ blood_thinner ]', what='clears low-end mud on every track',
+ dict(k='music', slug='blood_thinner', n='01', tot='03', maker='ableton eq eight', kind='preset', h='[ blood_thinner ]', what='clears low-end mud on every track',
       t1='_eq eight preset', t2='_six macros, five bands free', href='/blood-thinner/', ext=False, fig=eqfig(), ratio='400 / 260', mw='400px',
       br='[ product page ]', dl=GUM['blood_thinner'], sub=['free', '·', 'name your price']),
- dict(k='mm', slug='morpmarker', n='02', tot='02', maker='max for live', kind='device', h='morpmarker', what='splice markers for the morphagene',
+ dict(k='mm', slug='morpmarker', n='02', tot='03', maker='max for live', kind='device', h='morpmarker', what='splice markers for the morphagene',
       t1='_max for live device', t2='_for marking splices', href='/morpmarker/', ext=False, fig=splices(), ratio='400 / 260', mw='400px',
       br='[ product page ]', dl=GUM['morpmarker'], sub=['free', '·', 'name your price']),
+ dict(k='tg', slug='massiv', n='03', tot='03', maker='xfer serum 2', kind='skin', h='[ massiv ]', what='a silver-knob, navy-screen reskin for serum 2',
+      t1='_serum 2 skin', t2='_1x + 2x, mac + windows', href=GUM['massiv'], ext=True, fig=skinfig(), ratio='400 / 260', mw='400px',
+      go='free download', br='[ gumroad ]', sub=['free', '·', 'name your price']),
 ]
 tp = page
 def _tswap(a, b):
@@ -279,7 +309,7 @@ def _tswap(a, b):
     assert tp.count(a) == 1, a[:60]
     tp = tp.replace(a, b)
 _tswap('<title>mellotom</title>', '<title>free tools · mellotom</title>')
-_tswap('content="mellotom: music, the morpmarker max for live device, and the travelers guide eurorack guides."', 'content="free max for live devices and ableton presets by mellotom, each with its own guide. download free on gumroad, or name your price."')
+_tswap('content="mellotom: music, the morpmarker max for live device, and the travelers guide eurorack guides."', 'content="free max for live devices, ableton presets and serum skins by mellotom. download free on gumroad, or name your price."')
 _tswap('<span>home ...................... 3 destinations</span>', f'<span>tools ................ {len(TOOLS)} free downloads</span>')
 _tswap('<span class="gc" data-path="TOTAL" data-l="37"', '<span class="gc" data-l="37"')
 _tswap('<span>_home</span><span class="acc">_choose a destination</span>', '<span>_free tools</span><span class="acc">_pay what you want</span>')
