@@ -81,6 +81,61 @@ def splices():
     s.append('</svg>')
     return ''.join(s)
 
+def eqmini(W=400, H=120, y0=0):
+    import math
+    L, Rt = 8, 8
+    X = lambda f: L + (math.log10(f) - math.log10(20)) / 3 * (W - L - Rt)
+    def d(f):
+        hp = -10 * math.log10(1 + (180 / f) ** 16)
+        ls = -5 / (1 + (f / 640) ** 2)
+        return hp + ls
+    pts = []
+    for i in range(121):
+        f = 20 * 1000 ** (i / 120)
+        y = y0 + 34 - d(f) * 4.2
+        pts.append(f'{X(f):.1f},{min(y, y0 + H - 6):.1f}')
+    s = [f'<rect x="{L}" y="{y0}" width="{W - L - Rt}" height="{H}" fill="var(--pn)"/>']
+    for f in (100, 1000, 10000):
+        s.append(f'<line x1="{X(f):.1f}" x2="{X(f):.1f}" y1="{y0}" y2="{y0 + H}" stroke="var(--hair)"/>')
+    s.append(f'<line x1="{L}" x2="{W - Rt}" y1="{y0 + 34}" y2="{y0 + 34}" stroke="var(--hair)"/>')
+    s.append(f'<polyline points="{" ".join(pts)}" fill="none" stroke="var(--acc)" stroke-width="3"/>')
+    return ''.join(s)
+def eqfig():
+    return f'<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="the blood_thinner curve: a high pass and a gentle low shelf">{eqmini(400, 236, 12)}</svg>'
+def toolsfig():
+    # a generic ableton-style device: title bar, knobs, buttons and toggles, no text
+    import math
+    s = ['<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="a generic ableton device with knobs and buttons">']
+    s.append('<rect x="14" y="20" width="372" height="220" rx="8" fill="var(--pn)" stroke="var(--ink)" stroke-width="2"/>')
+    s.append('<path d="M22 20 H378 a8 8 0 0 1 8 8 V50 H14 V28 a8 8 0 0 1 8 -8 Z" fill="var(--hair)"/>')
+    s.append('<circle cx="34" cy="35" r="8" fill="var(--acc)"/>')
+    s.append('<rect x="52" y="30" width="96" height="10" rx="5" fill="var(--mute)" opacity=".55"/>')
+    for i in range(3): s.append(f'<circle cx="{332 + i * 18}" cy="35" r="6" fill="var(--mute)" opacity=".55"/>')
+    def knob(cx, cy, r, frac, acc=True):
+        a0, a1 = math.radians(225), math.radians(-45)
+        p = lambda a: (cx + r * math.cos(a), cy - r * math.sin(a))
+        x0, y0 = p(a0); x1, y1 = p(a1)
+        s.append(f'<path d="M{x0:.1f} {y0:.1f} A{r} {r} 0 1 1 {x1:.1f} {y1:.1f}" fill="none" stroke="var(--hair)" stroke-width="5" stroke-linecap="round"/>')
+        a = a0 + (a1 - a0) * frac; xa, ya = p(a); large = 1 if (a0 - a) > math.pi else 0
+        col = 'var(--acc)' if acc else 'var(--ink)'
+        s.append(f'<path d="M{x0:.1f} {y0:.1f} A{r} {r} 0 {large} 1 {xa:.1f} {ya:.1f}" fill="none" stroke="{col}" stroke-width="5" stroke-linecap="round"/>')
+        s.append(f'<line x1="{cx}" y1="{cy}" x2="{xa:.1f}" y2="{ya:.1f}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>')
+    for i, fr in enumerate((.32, .58, .8)):
+        knob(66 + i * 72, 96, 24, fr)
+    for i, fr in enumerate((.2, .5, .7, .4)):
+        knob(48 + i * 46, 160, 13, fr, acc=False)
+    for i, on in enumerate((1, 0, 1, 0, 0)):
+        col = 'var(--acc)' if on else 'var(--hair)'
+        s.append(f'<rect x="{30 + i * 40}" y="194" width="32" height="22" rx="3" fill="{col}"/>')
+    s.append('<rect x="244" y="64" width="128" height="88" rx="4" fill="var(--bg)" stroke="var(--hair)"/>')
+    pts = ' '.join(f'{252 + i * 1.12:.1f},{108 - 26 * math.sin(i / 100 * math.pi * 2) * math.exp(-i / 140):.1f}' for i in range(101))
+    s.append(f'<polyline points="{pts}" fill="none" stroke="var(--acc)" stroke-width="3"/>')
+    for i, on in enumerate((1, 0)):
+        col = 'var(--acc)' if on else 'var(--hair)'
+        s.append(f'<rect x="{244 + i * 66}" y="166" width="62" height="20" rx="3" fill="{col}"/>')
+    s.append('<rect x="244" y="204" width="128" height="6" rx="3" fill="var(--hair)"/><rect x="244" y="204" width="84" height="6" rx="3" fill="var(--acc)"/><circle cx="328" cy="207" r="9" fill="var(--ink)"/>')
+    s.append('</svg>')
+    return ''.join(s)
 def sheet():
     s = ['<svg viewBox="0 0 400 260" width="100%" role="img" aria-label="a travelers guide sheet">']
     s.append('<rect x="1" y="1" width="398" height="258" fill="var(--bg)" stroke="var(--ink)" stroke-width="2"/>')
@@ -107,25 +162,27 @@ CARDS = [
  dict(k='music', slug='linktr.ee/mellotom', n='01', maker='mellotom', kind='links', h='music', what='every link in one place',
       t1='_mellotom', t2='_for listening', href='https://linktr.ee/mellotom', ext=True, fig=record(), ratio='1 / 1', mw='300px',
       br='[ music ]', sub=['opens linktr.ee']),
- dict(k='mm', slug='morpmarker', n='02', maker='max for live', kind='device', h='morpmarker', what='splice markers for the morphagene',
-      t1='_max for live device', t2='_for marking splices', href='/morpmarker/', ext=False, fig=splices(), ratio='400 / 260', mw='400px',
-      br='[ manual + download ]', sub=['manual', '·', 'download']),
+ dict(k='mm', slug='tools', n='02', maker='free', kind='pay what you want', h='free tools + downloads', what='max for live devices + ableton presets',
+      t1='_devices + presets', t2='_each with its own guide', href='/tools/', ext=False, fig=toolsfig(), ratio='400 / 260', mw='400px',
+      br='[ free tools ]', sub=['morpmarker', '·', 'blood_thinner']),
  dict(k='tg', slug='travelers-guide', n='03', maker='eurorack', kind='one-page guides', h='travelers guide', what='the welcome center',
       t1='_welcome center', t2='_choose a destination', href='/travelers-guide/', ext=False, fig=sheet(), ratio='400 / 260', mw='400px',
       br='[ the guides ]', sub=['light / dark inside', '·', 'phone friendly', '·', 'print ready']),
 ]
+import json as _json
+GUM = _json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gumroad.json'), encoding='utf-8'))
 def card(c):
     stripes = ''.join(f'<div style="height: 4px; background: var(--acc); opacity: {o}"></div>' for o in (1, .7, .45))
     tgt = ' target="_blank" rel="noopener"' if c['ext'] else ''
     return f'''<article class="card k-{c['k']}">
 <div class="stripes" aria-hidden="true">{stripes}</div>
 <div class="cin">
-<div class="slug"><span>{c['slug']}</span><span class="dots" aria-hidden="true"></span><span>{c['n']} / 03</span></div>
+<div class="slug"><span>{c['slug']}</span><span class="dots" aria-hidden="true"></span><span>{c['n']} / {c.get('tot', '03')}</span></div>
 <div class="slug m"><span>{c['maker']}</span><span class="dots" aria-hidden="true"></span><span>{c['kind']}</span></div>
 <div class="head"><span class="num">{c['n']}</span><div class="hb"><h2>{c['h']}</h2><span class="what">{c['what']}</span></div></div>
 <div class="tag"><span>{c['t1']}</span><span class="acc">{c['t2']}</span></div>
 <a class="fig" href="{c['href']}"{tgt} aria-label="open {c['h']}" tabindex="-1"><div class="figbox" style="aspect-ratio: {c['ratio']}; max-width: {c['mw']}">{c['fig']}</div></a>
-<a class="go" href="{c['href']}"{tgt}><span>navigate</span> <span class="br">{c['br']}</span>{ARROW}</a>
+<a class="go" href="{c['href']}"{tgt}><span>navigate</span> <span class="br">{c['br']}</span>{ARROW}</a>{('<a class="go dl" href="' + c['dl'] + '" target="_blank" rel="noopener"><span>free download</span> <span class="br">[ gumroad ]</span>' + ARROW + '</a>') if c.get('dl') else ''}
 <div class="sub">{''.join(f'<span>{x}</span>' for x in c['sub'])}</div>
 </div>
 </article>'''
@@ -145,7 +202,7 @@ page = f'''<!doctype html>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&amp;family=Roboto+Mono:wght@400;500;600;700&amp;display=swap">
 <style>{root_vars}{theme_css}{tm_css}
 {base_css}
-.grid{{padding-bottom:4px}}h1.logo{{line-height:0}}.logo-svg{{display:block;height:clamp(64px,8.2vw,148px);width:auto;max-width:100%}}.vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}.hero{{grid-template-columns:minmax(0,1fr)}}
+.grid{{padding-bottom:4px}}.go.dl{{margin-top:8px}}h1.logo{{line-height:0}}.logo-svg{{display:block;height:clamp(64px,8.2vw,148px);width:auto;max-width:100%}}.vh{{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}.hero{{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:1100px){{.wrap{{min-height:100vh;display:flex;flex-direction:column}}.grid{{flex:1}}}}
 {bg_css}
 </style>
@@ -167,7 +224,7 @@ page = f'''<!doctype html>
 </div>
 </header>
 <div class="lanes" aria-hidden="true">{lanes}</div>
-<div class="strip"><span>music · morpmarker · travelers guide</span><span>pick a window or press navigate</span><span>mellotom.music</span></div>
+<div class="strip"><span>music · free tools · travelers guide</span><span>pick a window or press navigate</span><span>mellotom.music</span></div>
 <main class="grid">
 {''.join(card(c) for c in CARDS)}
 </main>
@@ -206,6 +263,34 @@ var st=document.createElement("style");st.id="cardacc";st.textContent=css;docume
 </html>
 '''
 open(sys.argv[2], 'w', encoding='utf-8').write(page)
+
+# ---- free tools page (mellotom.music/tools/): one window per free download, each with its product page and a gumroad button
+TOOLS = [
+ dict(k='music', slug='blood_thinner', n='01', tot='02', maker='ableton eq eight', kind='preset', h='[ blood_thinner ]', what='clears low-end mud on every track',
+      t1='_eq eight preset', t2='_six macros, five bands free', href='/blood-thinner/', ext=False, fig=eqfig(), ratio='400 / 260', mw='400px',
+      br='[ product page ]', dl=GUM['blood_thinner'], sub=['free', '·', 'name your price']),
+ dict(k='mm', slug='morpmarker', n='02', tot='02', maker='max for live', kind='device', h='morpmarker', what='splice markers for the morphagene',
+      t1='_max for live device', t2='_for marking splices', href='/morpmarker/', ext=False, fig=splices(), ratio='400 / 260', mw='400px',
+      br='[ product page ]', dl=GUM['morpmarker'], sub=['free', '·', 'name your price']),
+]
+tp = page
+def _tswap(a, b):
+    global tp
+    assert tp.count(a) == 1, a[:60]
+    tp = tp.replace(a, b)
+_tswap('<title>mellotom</title>', '<title>free tools · mellotom</title>')
+_tswap('content="mellotom: music, the morpmarker max for live device, and the travelers guide eurorack guides."', 'content="free max for live devices and ableton presets by mellotom, each with its own guide. download free on gumroad, or name your price."')
+_tswap('<span>home ...................... 3 destinations</span>', f'<span>tools ................ {len(TOOLS)} free downloads</span>')
+_tswap('<span class="gc" data-path="TOTAL" data-l="37"', '<span class="gc" data-l="37"')
+_tswap('<span>_home</span><span class="acc">_choose a destination</span>', '<span>_free tools</span><span class="acc">_pay what you want</span>')
+_tswap('<span>music · free tools · travelers guide</span><span>pick a window or press navigate</span><span>mellotom.music</span>', '<span>every download is free on gumroad · name your price if you like</span><span>downloads stay in your gumroad library</span><span>mellotom.music</span>')
+tp = re.sub(r'<main class="grid">.*?</main>', lambda m: '<main class="grid">' + ''.join(card(c) for c in TOOLS) + '</main>', tp, count=1, flags=re.S)
+_back = ('<span><a class="tm" href="/" style="display: inline-flex; align-items: center; gap: 5px"><svg width="14" height="9" viewBox="0 0 14 9" aria-hidden="true" style="display: block; flex: none">'
+         '<path d="M13.2 4.5 H1.6 M5.1 1 L1.6 4.5 L5.1 8" fill="none" stroke="currentColor" stroke-width="1.3"></path></svg><span>back to mellotom.music</span></a></span>')
+_tswap('<div class="tm-line"><span>mode', '<div class="tm-line">' + _back + '<span>mode')
+os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), 'tools'), exist_ok=True)
+open(os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), 'tools', 'index.html'), 'w', encoding='utf-8').write(tp)
+print('ok tools', len(tp))
 
 # ---- ai usage disclaimer page: same shell as the home page, text from build/disclaimer.txt ----
 import html as _html
@@ -247,7 +332,7 @@ _swap('content="mellotom: music, the morpmarker max for live device, and the tra
 _swap('<span>home ...................... 3 destinations</span>', '<span>entry .............. ai usage disclaimer</span>')
 _swap('<div class="tm-line"><span>mode', '<div class="tm-line">' + BACK + '<span>mode')
 _swap('<span>_home</span><span class="acc">_choose a destination</span>', '<span>_entry</span><span class="acc">_ai usage disclaimer</span>')
-_swap('<span>music · morpmarker · travelers guide</span><span>pick a window or press navigate</span><span>mellotom.music</span>', '<span>ai usage disclaimer</span><span>linked from every page footer</span><span>mellotom.music</span>')
+_swap('<span>music · free tools · travelers guide</span><span>pick a window or press navigate</span><span>mellotom.music</span>', '<span>ai usage disclaimer</span><span>linked from every page footer</span><span>mellotom.music</span>')
 d = re.sub(r'<main class="grid">.*?</main>', lambda m: ENTRY, d, count=1, flags=re.S)
 _swap('</style>\n' + bg_pick, ENTRY_CSS + '\n</style>\n' + bg_pick)
 os.makedirs(os.path.join(os.path.dirname(os.path.abspath(sys.argv[2])), 'ai-usage-disclaimer'), exist_ok=True)
