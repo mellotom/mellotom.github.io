@@ -313,10 +313,10 @@ open(sys.argv[2], 'w', encoding='utf-8').write(page)
 TOOLS = [
  dict(k='music', slug='blood_thinner', n='01', tot='03', maker='ableton eq eight', kind='preset', h='[ blood_thinner ]', what='clears low-end mud on every track',
       t1='_eq eight preset', t2='_six macros, five bands free', href='/blood-thinner/', ext=False, fig=eqfig(), ratio='400 / 260', mw='400px',
-      br='[ product page ]', dl=GUM['blood_thinner'], sub=['free', '·', 'name your price']),
+      br='[ quick start ]', dl=GUM['blood_thinner'], sub=['free', '·', 'name your price']),
  dict(k='mm', slug='morpmarker', n='02', tot='03', maker='max for live', kind='device', h='morpmarker', what='splice markers for the morphagene',
       t1='_max for live device', t2='_for marking splices', href='/morpmarker/', ext=False, fig=splices(), ratio='400 / 260', mw='400px',
-      br='[ product page ]', dl=GUM['morpmarker'], sub=['free', '·', 'name your price']),
+      br='[ quick start ]', dl=GUM['morpmarker'], sub=['free', '·', 'name your price']),
  dict(k='tg', slug='massiv', n='03', tot='03', maker='xfer serum 2', kind='skin', h='[ massiv ]', what='a silver-knob, navy-screen reskin for serum 2',
       t1='_serum 2 skin', t2='_1x + 2x, mac + windows', href=GUM['massiv'], ext=True, fig=skinfig(), ratio='400 / 260', mw='400px',
       go='free download', br='[ gumroad ]', sub=['free', '·', 'name your price']),
