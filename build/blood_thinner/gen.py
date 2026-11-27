@@ -187,11 +187,9 @@ c4 = ''.join([
  ])),
 ])
 WHY = para(
- '<b>[ blood_thinner ] is my go-to eq preset.</b> it goes on nearly every track i make, at every stage of writing. it has one job: stop low frequencies building up, with a few quick controls for tone shaping, while leaving five eq bands free for anything else.',
- 'almost every sound you load into a daw carries low end, especially samples from big sample sites and instrument presets. they’re made to sound great on their own, because that’s what sells them. in a mix nothing plays on its own: every element arrives pre-hyped, and all that low end piles up.',
- 'low frequencies are physically big. a 100 Hz wave is about 11.3 ft (3.4 m) long, 1 kHz is just over 1 ft (0.34 m), and 10 kHz is 1.35 in (3.4 cm). every 10× up in frequency makes the wave 10× smaller and easier for a speaker to produce. leave the extra low end in and your monitors and sub spend their effort on it, and your mix compressors and limiters react to it long before a high frequency ever touches the gain reduction meter.',
- 'sends make it worse. feed several channels into a reverb or delay and their low end adds up, then gets smeared across time and the stereo field.',
- 'so blood_thinner goes first: straight after the sound source, before any time-based effect. i used to load a stock eq eight and draw this curve by hand on almost every track. now it’s one preset.')
+ '<b>[ blood_thinner ] is my go-to eq preset.</b> it goes on almost every track i make, at every stage, to stop low end piling up.',
+ 'most samples and instrument presets ship with extra low end so they sound big on their own. stack a few in a mix and that low end adds up. it eats headroom, makes your compressors and limiter work harder, and turns to mud once several channels hit the same reverb or delay.',
+ 'i used to draw this curve by hand in eq eight on every track. now it’s one preset: put it straight after the sound source, before any reverb or delay.')
 panel = (f'<div class="m-panel" style="grid-row: 1 / span 2; display: flex; flex-direction: column; background: {PANEL}; color: {INK}; border: 2px solid {INK}; padding: 0 26px 18px; min-width: 0; min-height: 0">'
  '<div style="display: flex; flex-direction: column; gap: 2px; margin: 0 -26px 12px" aria-hidden="true">' + ''.join(f'<div style="height: 4px; background: {c}"></div>' for c in STRIPES) + '</div>'
  f'<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-family: \'Archivo\', sans-serif; font-weight: 900; font-size: 27px; line-height: 1; letter-spacing: -.02em">__fig.01 : in my words</span><span class="sc">why it exists</span></div>'
